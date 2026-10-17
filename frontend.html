@@ -1,20 +1,591 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <title>ZNX X GLORY V92</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <style>
-body { background: #03060c; color: #00e5ff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
-h1 { font-size: 30px; letter-spacing: 5px; }
-p { color: #fff; }
+:root{--bg:#03060c;--bg2:#070d18;--panel:#0a1220;--panel2:#0d1728;--line:#15233a;--fg:#e6f2ff;--mut:#6f88a8;--cy:#00e5ff;--bl:#0088ff;--gr:#00ff88;--pk:#ff3d68;--yl:#ffcc00;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%}
+body{background:radial-gradient(ellipse at top,#0a1a2e 0%,var(--bg) 60%);color:var(--fg);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;min-height:100vh;overflow-x:hidden;}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font:inherit;color:inherit}
+#particles{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.35}
+#loader{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s,visibility .6s}
+#loader.hide{opacity:0;visibility:hidden}
+.ring{width:80px;height:80px;border-radius:50%;border:3px solid rgba(0,229,255,.12);border-top-color:var(--cy);border-right-color:var(--bl);animation:spin 1s linear infinite;margin-bottom:20px;box-shadow:0 0 40px rgba(0,229,255,.3)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ld-brand{font-size:32px;font-weight:900;letter-spacing:8px;color:var(--fg);text-shadow:0 0 24px var(--cy);animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.85}50%{opacity:1}}
+.ld-sub{margin-top:10px;font-size:11px;letter-spacing:5px;color:var(--mut)}
+.ld-bar{width:200px;height:3px;background:rgba(0,229,255,.1);border-radius:3px;margin-top:22px;overflow:hidden}
+.ld-bar-in{height:100%;width:0%;background:linear-gradient(90deg,var(--bl),var(--cy));animation:fill 2.4s ease forwards}
+@keyframes fill{to{width:100%}}
+header{position:sticky;top:0;z-index:100;background:rgba(3,6,12,.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--bl),var(--cy));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;color:#001018;box-shadow:0 0 24px rgba(0,229,255,.5);letter-spacing:1px;}
+.brand-name{font-size:15px;font-weight:800;letter-spacing:2px}
+.brand-sub{font-size:9px;letter-spacing:3px;color:var(--mut);margin-top:-1px}
+.hdr-right{display:flex;gap:8px;align-items:center}
+.ibtn{width:38px;height:38px;border-radius:10px;background:var(--panel);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--fg);transition:.2s}
+.ibtn:hover{border-color:var(--cy);color:var(--cy);box-shadow:0 0 16px rgba(0,229,255,.3)}
+main{position:relative;z-index:1;padding:16px;max-width:920px;margin:0 auto;padding-bottom:100px}
+.hero{background:linear-gradient(135deg,rgba(0,136,255,.08),rgba(0,229,255,.04));border:1px solid var(--line);border-radius:18px;padding:22px;position:relative;overflow:hidden;margin-bottom:16px;}
+.hero:before{content:'';position:absolute;top:-50%;right:-30%;width:400px;height:400px;background:radial-gradient(circle,rgba(0,229,255,.15),transparent 70%);animation:float 8s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(-30px,20px)}}
+.hero h1{margin:0 0 6px;font-size:24px;font-weight:900;letter-spacing:4px;background:linear-gradient(90deg,#fff,var(--cy));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.hero p{margin:0;color:var(--mut);font-size:12px;letter-spacing:2px}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:20px;font-size:10px;letter-spacing:2px;font-weight:700;background:rgba(0,255,136,.1);color:var(--gr);border:1px solid rgba(0,255,136,.3);margin-top:12px;}
+.badge .dot{width:6px;height:6px;background:var(--gr);border-radius:50%;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1;box-shadow:0 0 8px var(--gr)}50%{opacity:.4}}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;position:relative;overflow:hidden;transition:.3s;}
+.stat:hover{border-color:var(--cy);box-shadow:0 0 24px rgba(0,229,255,.15)}
+.stat:before{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--cy),transparent);opacity:.6}
+.stat-v{font-size:26px;font-weight:800;letter-spacing:1px}
+.stat-v.cy{color:var(--cy)}
+.stat-v.gr{color:var(--gr)}
+.stat-l{font-size:10px;letter-spacing:2px;color:var(--mut);margin-top:4px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px;backdrop-filter:blur(10px)}
+.panel-title{font-size:11px;letter-spacing:3px;color:var(--mut);margin-bottom:14px;display:flex;align-items:center;gap:8px;font-weight:700}
+.panel-title:before{content:'';width:3px;height:14px;background:linear-gradient(180deg,var(--cy),var(--bl));border-radius:2px}
+.feed{max-height:260px;overflow-y:auto}
+.feed-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid rgba(21,35,58,.5);animation:slideIn .4s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+.feed-item:last-child{border-bottom:none}
+.feed-icon{width:28px;height:28px;border-radius:8px;flex-shrink:0;background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.25);display:flex;align-items:center;justify-content:center;font-size:12px;}
+.feed-txt{flex:1;font-size:12px;line-height:1.4}
+.feed-txt strong{color:var(--fg);font-weight:600}
+.feed-txt span{color:var(--mut);font-size:10px;letter-spacing:1px}
+.feed-demo{display:inline-block;padding:2px 6px;border-radius:4px;background:rgba(255,204,0,.12);color:var(--yl);font-size:9px;font-weight:700;letter-spacing:1px;margin-left:6px;}
+.plan{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px;transition:.25s;position:relative;overflow:hidden;}
+.plan:hover{border-color:var(--cy);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,229,255,.15)}
+.plan-h{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.plan-t{font-size:16px;font-weight:800;letter-spacing:2px}
+.plan-p{font-size:22px;font-weight:900;color:var(--cy);text-shadow:0 0 16px rgba(0,229,255,.5)}
+.plan-desc{font-size:12px;color:var(--mut);margin-bottom:10px;line-height:1.5}
+.plan-feats{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.feat{font-size:10px;padding:4px 9px;border-radius:20px;letter-spacing:.5px;background:rgba(0,229,255,.06);color:var(--cy);border:1px solid rgba(0,229,255,.2);}
+.btn{width:100%;padding:13px;border-radius:10px;font-weight:700;letter-spacing:2px;font-size:12px;transition:.2s}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-p{background:linear-gradient(135deg,var(--bl),var(--cy));color:#001018;box-shadow:0 4px 20px rgba(0,229,255,.3)}
+.btn-g{background:var(--panel);color:var(--fg);border:1px solid var(--line)}
+.btn-d{background:rgba(255,61,104,.15);color:var(--pk);border:1px solid rgba(255,61,104,.3)}
+.btn-row{display:flex;gap:8px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:10px;letter-spacing:2px;color:var(--mut);margin-bottom:6px;font-weight:600}
+.field input,.field textarea,.field select{width:100%;padding:12px;border-radius:10px;background:var(--bg2);border:1px solid var(--line);color:var(--fg);outline:none;transition:.2s;}
+.field input:focus,.field textarea:focus{border-color:var(--cy);box-shadow:0 0 0 3px rgba(0,229,255,.1)}
+.modal{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px}
+.modal.on{display:flex;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-box{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;animation:popIn .3s ease;}
+@keyframes popIn{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.modal-t{font-size:15px;font-weight:800;letter-spacing:2px}
+.close-x{width:32px;height:32px;border-radius:8px;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--mut)}
+.tabs{display:flex;gap:8px;margin-bottom:18px}
+.tab{flex:1;padding:11px;border-radius:10px;background:var(--panel2);border:1px solid var(--line);text-align:center;font-size:11px;letter-spacing:2px;color:var(--mut);font-weight:600;transition:.2s}
+.tab.on{border-color:var(--cy);color:var(--cy);background:rgba(0,229,255,.08);box-shadow:0 0 16px rgba(0,229,255,.2)}
+.hint{font-size:11px;color:var(--mut);letter-spacing:.5px;margin-top:8px;min-height:16px}
+.hint.err{color:var(--pk)}
+.hint.ok{color:var(--gr)}
+.qr-box{text-align:center;padding:16px;background:var(--bg2);border-radius:12px;border:1px solid var(--line);margin-bottom:14px}
+.qr-box img{width:220px;height:220px;border-radius:8px;background:#fff;padding:8px}
+.qr-amt{font-size:28px;font-weight:900;color:var(--cy);margin:12px 0 4px;text-shadow:0 0 20px rgba(0,229,255,.5)}
+.qr-oid{font-size:11px;color:var(--mut);letter-spacing:2px}
+.success-box{text-align:center}
+.success-ico{width:90px;height:90px;border-radius:50%;margin:0 auto 20px;background:radial-gradient(circle,rgba(0,255,136,.25),transparent 70%);border:2px solid var(--gr);display:flex;align-items:center;justify-content:center;font-size:44px;color:var(--gr);animation:pop 0.5s ease;box-shadow:0 0 40px rgba(0,255,136,.5);}
+@keyframes pop{0%{transform:scale(0)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+.success-t{font-size:20px;font-weight:900;letter-spacing:3px;color:var(--gr);margin-bottom:6px}
+.success-s{font-size:11px;letter-spacing:2px;color:var(--mut);margin-bottom:20px}
+.success-info{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:left;margin-bottom:16px}
+.success-info .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(21,35,58,.5)}
+.success-info .row:last-child{border-bottom:none}
+.success-info .k{font-size:11px;color:var(--mut);letter-spacing:1px}
+.success-info .v{font-size:12px;font-weight:700;color:var(--fg)}
+.sub-card{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:10px}
+.sub-card.active{border-color:rgba(0,255,136,.4);box-shadow:0 0 24px rgba(0,255,136,.1)}
+.sub-card.expired{border-color:rgba(255,61,104,.3);opacity:.7}
+.sub-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.sub-t{font-size:14px;font-weight:800;letter-spacing:2px}
+.sub-badge{padding:4px 10px;border-radius:20px;font-size:9px;font-weight:800;letter-spacing:1.5px}
+.sub-badge.active{background:rgba(0,255,136,.12);color:var(--gr);border:1px solid rgba(0,255,136,.3)}
+.sub-badge.expired{background:rgba(255,61,104,.12);color:var(--pk);border:1px solid rgba(255,61,104,.3)}
+.sub-badge.pending{background:rgba(255,204,0,.12);color:var(--yl);border:1px solid rgba(255,204,0,.3)}
+.sub-time{font-size:22px;font-weight:900;color:var(--cy);letter-spacing:2px;text-shadow:0 0 16px rgba(0,229,255,.4)}
+.sub-lab{font-size:10px;color:var(--mut);letter-spacing:2px}
+.admin-sec{margin-bottom:16px}
+.admin-h{font-size:12px;letter-spacing:2px;color:var(--cy);margin-bottom:10px;font-weight:700;text-transform:uppercase}
+.admin-row{display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;margin-bottom:6px;font-size:12px;}
+.admin-row .k{color:var(--mut);letter-spacing:1px;font-size:10px}
+.admin-row .v{font-weight:700}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);z-index:9999;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 18px;font-size:12px;letter-spacing:1px;transition:.3s;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.toast.on{transform:translateX(-50%) translateY(0)}
+.toast.ok{border-color:rgba(0,255,136,.4);color:var(--gr)}
+.toast.err{border-color:rgba(255,61,104,.4);color:var(--pk)}
+.empty{text-align:center;color:var(--mut);font-size:12px;padding:24px 0;letter-spacing:1px}
+.skeleton{background:linear-gradient(90deg,var(--panel2) 25%,#1a2438 50%,var(--panel2) 75%);background-size:200% 100%;animation:sk 1.4s infinite;border-radius:8px;height:60px;margin-bottom:10px}
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
 </style>
 </head>
 <body>
-<div>
-  <h1>ZNX X GLORY</h1>
-  <p>Web is live. Loading assets...</p>
-  <p style="font-size:12px; color:#888;">If you see this, the HTML is finally loading.</p>
+<canvas id="particles"></canvas>
+<div id="loader">
+  <div class="ring"></div>
+  <div class="ld-brand">ZNX</div>
+  <div class="ld-sub">GLORY V92</div>
+  <div class="ld-bar"><div class="ld-bar-in"></div></div>
 </div>
+<header>
+  <div class="brand">
+    <div class="logo">ZNX</div>
+    <div>
+      <div class="brand-name">ZNX X GLORY</div>
+      <div class="brand-sub">V92 TRACKER</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <button class="ibtn" id="userBtn" title="Account">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </button>
+    <button class="ibtn" id="adminBtn" title="Admin">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    </button>
+  </div>
+</header>
+<main>
+  <div class="hero">
+    <h1>GUILD LIVE TRACKER</h1>
+    <p>PREMIUM GLORY MONITORING SYSTEM</p>
+    <span class="badge"><span class="dot"></span>RUNNING</span>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-v cy" id="statMatches">--</div><div class="stat-l">ONGOING MATCHES <span style="color:var(--yl);font-size:9px">DEMO</span></div></div>
+    <div class="stat"><div class="stat-v gr" id="statBots">729</div><div class="stat-l">ACTIVE BOTS</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">LIVE ACTIVITY <span style="color:var(--yl);font-size:9px;letter-spacing:1px;margin-left:auto">DEMO</span></div>
+    <div class="feed" id="feed">
+      <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+    </div>
+  </div>
+  <div class="panel" id="subsPanel" style="display:none">
+    <div class="panel-title">MY SUBSCRIPTIONS</div>
+    <div id="subsList"><div class="empty">NO ACTIVE PLAN</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">PLANS</div>
+    <div id="plansList"><div class="skeleton"></div><div class="skeleton"></div></div>
+  </div>
+</main>
+
+<div class="modal" id="authModal">
+  <div class="modal-box">
+    <div class="modal-h">
+      <div class="modal-t" id="authTitle">SIGN IN</div>
+      <button class="close-x" onclick="closeModal('authModal')">✕</button>
+    </div>
+    <div class="tabs">
+      <div class="tab on" data-auth="login">LOGIN</div>
+      <div class="tab" data-auth="signup">SIGN UP</div>
+    </div>
+    <div class="field"><label>USERNAME</label><input id="au" autocomplete="username"></div>
+    <div class="field"><label>PASSWORD</label><input id="ap" type="password" autocomplete="current-password"></div>
+    <div class="field" id="ap2f" style="display:none"><label>CONFIRM PASSWORD</label><input id="ap2" type="password"></div>
+    <button class="btn btn-p" id="authBtn">LOGIN</button>
+    <div class="hint" id="authHint"></div>
+  </div>
+</div>
+
+<div class="modal" id="checkoutModal">
+  <div class="modal-box">
+    <div class="modal-h">
+      <div class="modal-t">ORDER SUMMARY</div>
+      <button class="close-x" onclick="closeModal('checkoutModal')">✕</button>
+    </div>
+    <div class="success-info" id="orderSummary"></div>
+    <div class="field"><label>YOUR FREE FIRE GUILD ID</label><input id="guildId" placeholder="e.g. 1234567890"></div>
+    <button class="btn btn-p" id="payBtn">CONTINUE TO PAYMENT</button>
+    <div class="hint" id="coHint"></div>
+  </div>
+</div>
+
+<div class="modal" id="qrModal">
+  <div class="modal-box">
+    <div class="modal-h">
+      <div class="modal-t">SCAN & PAY</div>
+      <button class="close-x" onclick="closeModal('qrModal')">✕</button>
+    </div>
+    <div class="qr-box">
+      <img id="qrImg" src="" alt="QR">
+      <div class="qr-amt" id="qrAmt">₹0</div>
+      <div class="qr-oid" id="qrOid">--</div>
+    </div>
+    <div style="font-size:11px;color:var(--mut);text-align:center;margin-bottom:14px;line-height:1.6">
+      Scan with any UPI app and pay the exact amount.<br>
+      After paying, click below. Your payment will be<br>
+      reviewed by an admin within 24 hours.
+    </div>
+    <button class="btn btn-p" id="paidBtn">I HAVE PAID — SUBMIT FOR VERIFICATION</button>
+  </div>
+</div>
+
+<div class="modal" id="pendingModal">
+  <div class="modal-box" style="text-align:center">
+    <div class="success-ico" style="border-color:var(--yl);color:var(--yl);background:radial-gradient(circle,rgba(255,204,0,.25),transparent 70%)">⏱</div>
+    <div class="success-t" style="color:var(--yl)">PAYMENT VERIFICATION IN PROGRESS</div>
+    <div class="success-s">PLEASE WAIT WHILE YOUR PAYMENT IS REVIEWED</div>
+    <div style="font-size:12px;color:var(--mut);line-height:1.7;margin:16px 0">
+      Review can take up to maximum <strong style="color:var(--fg)">24 hours</strong>.<br>
+      You will be notified once approved.
+    </div>
+    <button class="btn btn-g" onclick="closeModal('pendingModal')">OK</button>
+  </div>
+</div>
+
+<div class="modal" id="adminModal">
+  <div class="modal-box" style="max-width:600px">
+    <div class="modal-h">
+      <div class="modal-t" id="adminTitle">ADMIN ACCESS</div>
+      <button class="close-x" onclick="closeModal('adminModal')">✕</button>
+    </div>
+    <div id="adminGate">
+      <div class="field"><label>ENTER 4-DIGIT PIN</label><input id="adminPin" type="password" placeholder="****" maxlength="4" style="text-align:center;font-size:24px;letter-spacing:8px;"></div>
+      <button class="btn btn-p" onclick="checkPin()">UNLOCK PANEL</button>
+      <div class="hint" id="adminHint"></div>
+    </div>
+    <div id="adminContent" style="display:none">
+      <div class="admin-sec">
+        <div class="admin-h">Overview</div>
+        <div id="ovw"><div class="skeleton"></div></div>
+      </div>
+      <div class="admin-sec">
+        <div class="admin-h">Pending Orders</div>
+        <div id="pendingList"></div>
+      </div>
+      <div class="admin-sec">
+        <div class="admin-h">All Orders</div>
+        <div id="allOrders"></div>
+      </div>
+      <div class="admin-sec">
+        <div class="admin-h">Plans</div>
+        <div id="adminPlans"></div>
+        <button class="btn btn-g" onclick="addPlanPrompt()" style="margin-top:8px">+ ADD NEW PLAN</button>
+      </div>
+      <div class="admin-sec">
+        <div class="admin-h">Settings</div>
+        <div class="field"><label>UPI ID</label><input id="setUpiId"></div>
+        <div class="field"><label>MERCHANT NAME</label><input id="setUpiName"></div>
+        <div class="field"><label>DEMO COUNTER MIN</label><input id="setDcMin" type="number"></div>
+        <div class="field"><label>DEMO COUNTER MAX</label><input id="setDcMax" type="number"></div>
+        <button class="btn btn-p" onclick="saveSettings()">SAVE SETTINGS</button>
+      </div>
+      <div class="admin-sec">
+        <div class="admin-h">Users</div>
+        <div id="usersList"></div>
+      </div>
+      <div class="admin-sec">
+        <div class="admin-h">Activity Logs</div>
+        <div id="logsList" style="max-height:220px;overflow-y:auto"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="userModal">
+  <div class="modal-box">
+    <div class="modal-h">
+      <div class="modal-t">ACCOUNT</div>
+      <button class="close-x" onclick="closeModal('userModal')">✕</button>
+    </div>
+    <div id="userLoggedOut">
+      <div class="empty">NOT LOGGED IN</div>
+      <button class="btn btn-p" onclick="closeModal('userModal');openAuth('login')">LOGIN / SIGN UP</button>
+    </div>
+    <div id="userLoggedIn" style="display:none">
+      <div class="success-info">
+        <div class="row"><div class="k">USERNAME</div><div class="v" id="uName">--</div></div>
+        <div class="row"><div class="k">ROLE</div><div class="v" id="uRole">--</div></div>
+      </div>
+      <button class="btn btn-d" id="logoutBtn">LOGOUT</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+cat << 'EOF' > part3.txt
+
+<script>
+const API = window.location.origin;
+const $ = id => document.getElementById(id);
+const LS_TOKEN = "znx_token_v1";
+const LS_USER = "znx_user_v1";
+let token = localStorage.getItem(LS_TOKEN);
+let user = JSON.parse(localStorage.getItem(LS_USER) || "null");
+let authMode = "login";
+let currentPlanForCheckout = null;
+let currentOrder = null;
+let demoMin = 180, demoMax = 260;
+let subTimers = [];
+
+function toast(msg, cls = "") {
+  const t = $("toast");
+  t.textContent = msg;
+  t.className = "toast on " + cls;
+  setTimeout(() => t.className = "toast " + cls, 2600);
+}
+function openModal(id) { $(id).classList.add("on"); }
+function closeModal(id) { $(id).classList.remove("on"); }
+document.querySelectorAll(".modal").forEach(m => m.addEventListener("click", e => { if (e.target === m) m.classList.remove("on"); }));
+
+async function api(path, opts = {}) {
+  const headers = { "Content-Type": "application/json", ...(opts.headers || {}) };
+  if (token) headers["Authorization"] = "Bearer " + token;
+  const r = await fetch(API + path, { ...opts, headers });
+  let data;
+  try { data = await r.json(); } catch { data = {}; }
+  if (!r.ok) throw new Error(data.detail || data.message || ("HTTP " + r.status));
+  return data;
+}
+
+(function particles() {
+  const cv = $("particles"); if (!cv) return;
+  const ctx = cv.getContext("2d");
+  let W, H, parts = [];
+  function resize() { W = cv.width = innerWidth; H = cv.height = innerHeight; }
+  resize(); addEventListener("resize", resize);
+  for (let i = 0; i < 40; i++) parts.push({x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - .5) * .3, vy: (Math.random() - .5) * .3, r: Math.random() * 1.5 + .5});
+  function loop() {
+    ctx.clearRect(0, 0, W, H);
+    parts.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0 || p.x > W) p.vx *= -1;
+      if (p.y < 0 || p.y > H) p.vy *= -1;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.28); ctx.fillStyle = "rgba(0,229,255," + (Math.random() * .5 + .3) + ")"; ctx.fill();
+    });
+    for (let i = 0; i < parts.length; i++) for (let j = i + 1; j < parts.length; j++) {
+      const dx = parts[i].x - parts[j].x, dy = parts[i].y - parts[j].y;
+      const d = Math.sqrt(dx * dx + dy * dy);
+      if (d < 120) { ctx.beginPath(); ctx.moveTo(parts[i].x, parts[i].y); ctx.lineTo(parts[j].x, parts[j].y); ctx.strokeStyle = "rgba(0,136,255," + (1 - d / 120) * .15 + ")"; ctx.stroke(); }
+    }
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+
+setTimeout(() => {
+  $("loader").classList.add("hide");
+  bootstrap();
+}, 2400);
+
+async function bootstrap() {
+  loadPublicSettings(); loadPlans(); loadFeed(); refreshUserUI();
+  if (user) loadSubscriptions();
+  startDemoCounter();
+}
+
+async function loadPublicSettings() {
+  try {
+    const s = await api("/api/settings/public");
+    if (s.demo_counter_min) demoMin = parseInt(s.demo_counter_min);
+    if (s.demo_counter_max) demoMax = parseInt(s.demo_counter_max);
+  } catch {}
+}
+
+function openAuth(mode = "login") {
+  authMode = mode; updateAuthTabs(); openModal("authModal"); $("au").focus();
+}
+function updateAuthTabs() {
+  document.querySelectorAll("#authModal .tab").forEach(t => t.classList.toggle("on", t.dataset.auth === authMode));
+  $("authTitle").textContent = authMode === "login" ? "SIGN IN" : "CREATE ACCOUNT";
+  $("authBtn").textContent = authMode === "login" ? "LOGIN" : "SIGN UP";
+  $("ap2f").style.display = authMode === "signup" ? "" : "none";
+  $("authHint").textContent = "";
+}
+document.querySelectorAll("#authModal .tab").forEach(t => t.onclick = () => { authMode = t.dataset.auth; updateAuthTabs(); });
+
+$("authBtn").onclick = async () => {
+  const u = $("au").value.trim(); const p = $("ap").value; const p2 = $("ap2").value;
+  if (!u || u.length < 3) return authHint("Username min 3 chars", true);
+  if (!p || p.length < 4) return authHint("Password min 4 chars", true);
+  if (authMode === "signup" && p !== p2) return authHint("Passwords don't match", true);
+  try {
+    const path = authMode === "signup" ? "/api/auth/register" : "/api/auth/login";
+    const r = await api(path, { method: "POST", body: JSON.stringify({ username: u, password: p }) });
+    token = r.token; user = r.user;
+    localStorage.setItem(LS_TOKEN, token); localStorage.setItem(LS_USER, JSON.stringify(user));
+    closeModal("authModal"); toast("Welcome, " + user.username, "ok");
+    refreshUserUI(); loadSubscriptions();
+    if (currentPlanForCheckout) proceedToCheckout(currentPlanForCheckout);
+  } catch (e) { authHint(e.message, true); }
+};
+
+function authHint(msg, err) {
+  const h = $("authHint"); h.textContent = msg; h.className = "hint " + (err ? "err" : "ok");
+}
+
+function refreshUserUI() {
+  if (user) {
+    $("userLoggedOut").style.display = "none"; $("userLoggedIn").style.display = "";
+    $("uName").textContent = user.username; $("uRole").textContent = user.role.toUpperCase();
+    $("subsPanel").style.display = "";
+  } else {
+    $("userLoggedOut").style.display = ""; $("userLoggedIn").style.display = "none"; $("subsPanel").style.display = "none";
+  }
+}
+
+$("userBtn").onclick = () => { refreshUserUI(); openModal("userModal"); };
+$("logoutBtn").onclick = () => {
+  token = null; user = null; localStorage.removeItem(LS_TOKEN); localStorage.removeItem(LS_USER);
+  closeModal("userModal"); toast("Logged out"); refreshUserUI();
+  subTimers.forEach(t => clearInterval(t)); subTimers = [];
+};
+
+async function loadPlans() {
+  try {
+    const plans = await api("/api/plans");
+    const box = $("plansList");
+    if (!plans.length) { box.innerHTML = '<div class="empty">NO PLANS AVAILABLE</div>'; return; }
+    box.innerHTML = plans.map(p => `
+      <div class="plan">
+        <div class="plan-h">
+          <div><div class="plan-t">${esc(p.title)}</div><div class="plan-desc">${esc(p.description)}</div></div>
+          <div style="text-align:right"><div class="plan-p">₹${p.price}</div><small style="color:var(--mut);font-size:10px;letter-spacing:1px">${p.duration_hours}H</small></div>
+        </div>
+        <div class="plan-feats">${p.features.split("|").map(f => `<span class="feat">${esc(f.trim())}</span>`).join("")}</div>
+        <button class="btn btn-p" onclick='choosePlan(${JSON.stringify(p).replace(/'/g, "&#39;")})'>CHOOSE PLAN</button>
+      </div>
+    `).join("");
+  } catch (e) { $("plansList").innerHTML = '<div class="empty">FAILED TO LOAD PLANS</div>'; }
+}
+
+function choosePlan(plan) {
+  if (!user) { currentPlanForCheckout = plan; toast("Login or sign up to continue"); openAuth("login"); return; }
+  proceedToCheckout(plan);
+}
+
+function proceedToCheckout(plan) {
+  currentPlanForCheckout = plan;
+  $("orderSummary").innerHTML = `
+    <div class="row"><div class="k">PLAN</div><div class="v">${esc(plan.title)}</div></div>
+    <div class="row"><div class="k">DURATION</div><div class="v">${plan.duration_hours} HOURS</div></div>
+    <div class="row"><div class="k">AMOUNT</div><div class="v" style="color:var(--cy)">₹${plan.price}.00</div></div>
+  `;
+  $("guildId").value = ""; $("coHint").textContent = ""; openModal("checkoutModal");
+}
+
+$("payBtn").onclick = async () => {
+  const gid = $("guildId").value.trim();
+  if (gid.length < 4) { $("coHint").textContent = "Enter valid guild ID"; $("coHint").className = "hint err"; return; }
+  $("payBtn").disabled = true;
+  try {
+    const r = await api("/api/orders", { method: "POST", body: JSON.stringify({ plan_id: currentPlanForCheckout.id, guild_id: gid }) });
+    currentOrder = r;
+    const qr = await api("/api/orders/" + r.order_id + "/qr");
+    $("qrImg").src = "data:image/png;base64," + qr.qr_png_base64;
+    $("qrAmt").textContent = "₹" + qr.amount; $("qrOid").textContent = "ORDER " + r.order_id;
+    closeModal("checkoutModal"); openModal("qrModal");
+  } catch (e) { $("coHint").textContent = e.message; $("coHint").className = "hint err"; } finally { $("payBtn").disabled = false; }
+};
+
+$("paidBtn").onclick = () => { closeModal("qrModal"); openModal("pendingModal"); loadSubscriptions(); };
+
+async function loadSubscriptions() {
+  if (!user) return;
+  subTimers.forEach(t => clearInterval(t)); subTimers = [];
+  try {
+    const subs = await api("/api/subscriptions/my");
+    const orders = await api("/api/orders/my");
+    const box = $("subsList");
+    let html = "";
+    orders.filter(o => o.status === "PENDING").forEach(o => {
+      html += `<div class="sub-card"><div class="sub-h"><div class="sub-t">${esc(o.plan_title)}</div><div class="sub-badge pending">PENDING</div></div><div style="font-size:11px;color:var(--mut)">ORDER ${o.order_id} · ₹${o.amount}</div><div style="font-size:10px;color:var(--yl);margin-top:8px">⏱ Awaiting admin verification (max 24h)</div></div>`;
+    });
+    subs.forEach(s => {
+      const cls = s.status === "ACTIVE" ? "active" : "expired";
+      html += `<div class="sub-card ${cls}"><div class="sub-h"><div class="sub-t">${esc(s.plan_title)}</div><div class="sub-badge ${cls}">${s.status}</div></div><div style="font-size:11px;color:var(--mut);margin-bottom:6px">GUILD: ${esc(s.guild_id)}</div><div class="sub-time" data-rem="${s.remaining_seconds}">--:--:--</div><div class="sub-lab">REMAINING PLAYTIME</div></div>`;
+    });
+    if (!html) html = '<div class="empty">NO ACTIVE PLAN</div>';
+    box.innerHTML = html;
+    document.querySelectorAll(".sub-time").forEach(el => {
+      let rem = parseInt(el.dataset.rem);
+      const tick = () => {
+        if (rem <= 0) { el.textContent = "EXPIRED"; el.style.color = "var(--pk)"; return; }
+        const h = String(Math.floor(rem / 3600)).padStart(2, "0"); const m = String(Math.floor(rem % 3600 / 60)).padStart(2, "0"); const s = String(rem % 60).padStart(2, "0");
+        el.textContent = `${h}:${m}:${s}`; rem--;
+      };
+      tick(); subTimers.push(setInterval(tick, 1000));
+    });
+  } catch (e) {}
+}
+
+const feedPool = [{ico:"⚔",txt:"MATCH STARTED",detail:"+48 GLORY"},{ico:"👥",txt:"PLAYER JOINED",detail:""},{ico:"✓",txt:"MATCH COMPLETED",detail:"+72 GLORY"},{ico:"📈",txt:"GLORY UPDATED",detail:"+12"}];
+async function loadFeed() {
+  const box = $("feed"); box.innerHTML = "";
+  for (let i = 0; i < 6; i++) addFeedItem(true);
+}
+function addFeedItem(prepend = false) {
+  const box = $("feed"); const item = feedPool[Math.floor(Math.random() * feedPool.length)];
+  const el = document.createElement("div"); el.className = "feed-item";
+  el.innerHTML = `<div class="feed-icon">${item.ico}</div><div class="feed-txt"><strong>${item.txt}</strong> <span style="color:var(--cy)">${item.detail}</span> <span class="feed-demo">DEMO</span><br><span>${new Date().toLocaleTimeString()}</span></div>`;
+  if (prepend && box.firstChild) box.insertBefore(el, box.firstChild); else box.appendChild(el);
+  while (box.children.length > 12) box.removeChild(box.lastChild);
+}
+setInterval(() => addFeedItem(true), 3200);
+
+function startDemoCounter() {
+  const el = $("statMatches"); let cur = Math.floor((demoMin + demoMax) / 2);
+  const tick = () => { cur += Math.floor(Math.random() * 7) - 3; if (cur < demoMin) cur = demoMin + 2; if (cur > demoMax) cur = demoMax - 2; el.textContent = cur + "+"; };
+  tick(); setInterval(tick, 2800);
+}
+
+function checkPin() {
+  if ($("adminPin").value === "9010") {
+    $("adminGate").style.display = "none"; $("adminContent").style.display = "";
+    $("adminTitle").textContent = "ADMIN PANEL"; loadAdminData();
+  } else {
+    $("adminHint").textContent = "WRONG PIN"; $("adminHint").className = "hint err";
+  }
+}
+$("adminBtn").onclick = () => { $("adminGate").style.display = ""; $("adminContent").style.display = "none"; openModal("adminModal"); };
+
+async function loadAdminData() {
+  try { const o = await api("/api/admin/overview"); $("ovw").innerHTML = `<div class="admin-row"><span class="k">USERS</span><span class="v">${o.total_users}</span></div><div class="admin-row"><span class="k">PENDING</span><span class="v" style="color:var(--yl)">${o.pending_payments}</span></div><div class="admin-row"><span class="k">APPROVED</span><span class="v" style="color:var(--gr)">${o.approved_payments}</span></div>`; } catch {}
+  try { const po = await api("/api/admin/orders?status=PENDING"); $("pendingList").innerHTML = po.length ? po.map(o => `<div class="admin-row" style="flex-direction:column;align-items:stretch;gap:8px"><div style="display:flex;justify-content:space-between"><span class="k">${o.order_id}</span><span class="v" style="color:var(--cy)">₹${o.amount}</span></div><div style="font-size:11px;color:var(--mut)">user: ${esc(o.username)} · guild: ${o.guild_id} · ${new Date(o.created_at).toLocaleString()}</div><div class="btn-row"><button class="btn btn-p" onclick="reviewOrder('${o.order_id}','approve')">APPROVE</button><button class="btn btn-d" onclick="reviewOrder('${o.order_id}','reject')">REJECT</button></div></div>`).join("") : '<div class="empty">NO PENDING ORDERS</div>'; } catch {}
+  try { const all = await api("/api/admin/orders"); $("allOrders").innerHTML = all.length ? all.map(o => `<div class="admin-row"><span class="k">${o.order_id}</span><span class="v" style="color:${o.status==='APPROVED'?'var(--gr)':'var(--pk)'};font-size:10px">${o.status}</span></div>`).join("") : '<div class="empty">NO ORDERS</div>'; } catch {}
+  try { const plans = await api("/api/admin/plans"); $("adminPlans").innerHTML = plans.map(p => `<div class="admin-row"><span class="k">${esc(p.title)} · ₹${p.price}</span></div>`).join(""); } catch {}
+  try { const s = await api("/api/admin/settings"); $("setUpiId").value = s.upi_id||""; $("setUpiName").value = s.upi_name||""; $("setDcMin").value = s.demo_counter_min||""; $("setDcMax").value = s.demo_counter_max||""; } catch {}
+  try { const logs = await api("/api/admin/logs"); $("logsList").innerHTML = logs.slice(0,50).map(l => `<div style="padding:6px 0;border-bottom:1px solid var(--line);font-size:11px"><span style="color:var(--mut)">${new Date(l.created_at).toLocaleTimeString()}</span> <strong>${esc(l.actor)}</strong> ${esc(l.action)}</div>`).join(""); } catch {}
+}
+
+window.reviewOrder = async (oid, action) => {
+  try { await api("/api/admin/orders/review", { method: "POST", body: JSON.stringify({ order_id: oid, action, admin_note: "" }) }); toast("Order " + action + "d", "ok"); loadAdminData(); } catch (e) { toast(e.message, "err"); }
+};
+
+window.saveSettings = async () => {
+  try {
+    await api("/api/admin/settings", { method: "POST", body: JSON.stringify({key:"upi_id",value:$("setUpiId").value}) });
+    await api("/api/admin/settings", { method: "POST", body: JSON.stringify({key:"upi_name",value:$("setUpiName").value}) });
+    await api("/api/admin/settings", { method: "POST", body: JSON.stringify({key:"demo_counter_min",value:$("setDcMin").value}) });
+    await api("/api/admin/settings", { method: "POST", body: JSON.stringify({key:"demo_counter_max",value:$("setDcMax").value}) });
+    toast("Settings saved", "ok");
+  } catch (e) { toast(e.message, "err"); }
+};
+
+window.addPlanPrompt = async () => {
+  const title = prompt("Plan title:"); if (!title) return;
+  const description = prompt("Description:") || "";
+  const price = parseInt(prompt("Price (INR):") || "0");
+  const duration_hours = parseInt(prompt("Duration (hours):") || "0");
+  const features = prompt("Features (pipe-separated):") || "";
+  try { await api("/api/admin/plans", { method: "POST", body: JSON.stringify({ title, description, price, duration_hours, features, active: 1 }) }); toast("Plan created", "ok"); loadAdminData(); loadPlans(); } catch (e) { toast(e.message, "err"); }
+};
+
+function esc(s) { return String(s||"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\\"":"&quot;","'":"&#39;"}[c])); }
+setInterval(() => { if (user) loadSubscriptions(); }, 30000);
+</script>
 </body>
 </html>
