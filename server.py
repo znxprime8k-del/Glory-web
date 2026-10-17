@@ -341,10 +341,12 @@ def admin_logs(admin: dict = Depends(admin_user)):
     with db() as c: rows = c.execute("SELECT * FROM activity_logs ORDER BY id DESC LIMIT 50").fetchall()
     return [dict(r) for r in rows]
 
-@app.get("/", response_class=HTMLResponse)
-def index():
-    with open("frontend.html", "r", encoding="utf-8") as f: return f.read()
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host=HOST, port=PORT)
+
+@app.get("/", response_class=HTMLResponse)
+def index():
+    with open("frontend.html", "r", encoding="utf-8") as f: 
+        return f.read()
