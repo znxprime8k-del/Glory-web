@@ -12,7 +12,7 @@ from fastapi import FastAPI, HTTPException, Depends, Header, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from passlib.context import CryptContext
+import bcrypt
 from jose import jwt, JWTError
 from dotenv import load_dotenv
 
@@ -28,7 +28,7 @@ PORT = int(os.getenv("PORT", 8000))
 ALGO = "HS256"
 TOKEN_TTL_HOURS = 72
 
-pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 
 app = FastAPI(title="ZNX X GLORY V92")
 app.add_middleware(
@@ -123,7 +123,7 @@ def ensure_admin():
     with db() as c:
         admin = c.execute("SELECT * FROM users WHERE role='admin'").fetchone()
         if not admin:
-            ph = pwd_ctx.hash(ADMIN_PASSWORD)
+            ph = bcrypt.hashpw(ADMIN_PASSWORD[:72].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
             c.execute("INSERT INTO users (username, password_hash, role, created_at) VALUES (?,?,?,?)",
                       (ADMIN_USERNAME, ph, "admin", now_iso()))
 
@@ -191,7 +191,7 @@ def register(body: RegisterIn):
     with db() as c:
         exists = c.execute("SELECT id FROM users WHERE username=?", (body.username,)).fetchone()
         if exists: raise HTTPException(400, "Username taken")
-        ph = pwd_ctx.hash(body.password)
+        ph = bcrypt.hashpw(body.password[:72].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
         cur = c.execute("INSERT INTO users (username, password_hash, role, created_at) VALUES (?,?,?,?)", (body.username, ph, "user", now_iso()))
         uid = cur.lastrowid
     return {"token": make_token(uid, body.username, "user"), "user": {"id": uid, "username": body.username, "role": "user"}}
@@ -200,7 +200,7 @@ def register(body: RegisterIn):
 def login(body: LoginIn):
     with db() as c:
         row = c.execute("SELECT * FROM users WHERE username=?", (body.username,)).fetchone()
-    if not row or not pwd_ctx.verify(body.password, row["password_hash"]): raise HTTPException(401, "Invalid credentials")
+    if not row or not bcrypt.checkpw(body.password[:72].encode("utf-8"), row["password_hash"].encode("utf-8")): raise HTTPException(401, "Invalid credentials")
     if row["suspended"]: raise HTTPException(403, "Account suspended")
     return {"token": make_token(row["id"], row["username"], row["role"]), "user": {"id": row["id"], "username": row["username"], "role": row["role"]}}
 
