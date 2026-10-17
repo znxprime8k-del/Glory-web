@@ -8,11 +8,11 @@ from typing import Optional, List
 from contextlib import contextmanager
 
 import qrcode
-from fastapi import FastAPI, HTTPException, Depends, Header, Request
-from fastapi.responses import HTMLResponse, JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
 import bcrypt
+from fastapi import FastAPI, HTTPException, Depends, Header
+from fastapi.responses import HTMLResponse
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from jose import jwt, JWTError
 from dotenv import load_dotenv
 
@@ -27,8 +27,6 @@ PORT = int(os.getenv("PORT", 8000))
 
 ALGO = "HS256"
 TOKEN_TTL_HOURS = 72
-
-
 
 app = FastAPI(title="ZNX X GLORY V92")
 app.add_middleware(
@@ -119,16 +117,6 @@ def init_db():
             c.execute("INSERT INTO plans (title, description, price, duration_hours, features, active, created_at) VALUES (?,?,?,?,?,1,?)", ("PRO", "Balanced plan", 299, 72, "72h bot runtime|Priority matchmaking", n))
             c.execute("INSERT INTO plans (title, description, price, duration_hours, features, active, created_at) VALUES (?,?,?,?,?,1,?)", ("ELITE", "Maximum runtime", 699, 168, "168h bot runtime|Max matches", n))
 
-def :
-    with db() as c:
-        admin = c.execute("SELECT * FROM users WHERE role='admin'").fetchone()
-        if not admin:
-            ph = bcrypt.hashpw(ADMIN_PASSWORD[:72].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-            c.execute("INSERT INTO users (username, password_hash, role, created_at) VALUES (?,?,?,?)",
-                      (ADMIN_USERNAME, ph, "admin", now_iso()))
-
-init_db()
-
 def make_token(user_id: int, username: str, role: str) -> str:
     payload = {"sub": str(user_id), "u": username, "r": role, "exp": datetime.now(timezone.utc) + timedelta(hours=TOKEN_TTL_HOURS)}
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGO)
@@ -156,10 +144,6 @@ def admin_user(user: dict = Depends(current_user)) -> dict:
     if user["role"] != "admin":
         raise HTTPException(403, "Admin only")
     return user
-
-def log_activity(actor: str, action: str, detail: str = ""):
-    with db() as c:
-        c.execute("INSERT INTO activity_logs (actor, action, detail, created_at) VALUES (?,?,?,?)", (actor, action, detail, now_iso()))
 
 class RegisterIn(BaseModel):
     username: str
@@ -197,10 +181,8 @@ def register(body: RegisterIn):
 
 @app.post("/api/auth/login")
 def login(body: LoginIn):
-    # HARDCODED ADMIN BYPASS (Fixes Render DB issues)
     if body.username == ADMIN_USERNAME and body.password == ADMIN_PASSWORD:
         with db() as c:
-            # Ensure admin exists in DB for other features
             admin = c.execute("SELECT * FROM users WHERE username=?", (ADMIN_USERNAME,)).fetchone()
             if not admin:
                 ph = bcrypt.hashpw(ADMIN_PASSWORD[:72].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
@@ -210,7 +192,6 @@ def login(body: LoginIn):
                 uid = admin["id"]
         return {"token": make_token(uid, ADMIN_USERNAME, "admin"), "user": {"id": uid, "username": ADMIN_USERNAME, "role": "admin"}}
         
-    # Normal User Login
     with db() as c:
         row = c.execute("SELECT * FROM users WHERE username=?", (body.username,)).fetchone()
     if not row or not bcrypt.checkpw(body.password[:72].encode("utf-8"), row["password_hash"].encode("utf-8")): 
@@ -218,9 +199,6 @@ def login(body: LoginIn):
     if row["suspended"]: 
         raise HTTPException(403, "Account suspended")
     return {"token": make_token(row["id"], row["username"], row["role"]), "user": {"id": row["id"], "username": row["username"], "role": row["role"]}}
-
-@app.get("/api/auth/me")
-def me(user: dict = Depends(current_user)): return user
 
 @app.get("/api/plans")
 def list_plans():
@@ -340,12 +318,12 @@ def admin_logs(admin: dict = Depends(admin_user)):
     with db() as c: rows = c.execute("SELECT * FROM activity_logs ORDER BY id DESC LIMIT 50").fetchall()
     return [dict(r) for r in rows]
 
+@app.get("/", response_class=HTMLResponse)
+def index():
+    with open("frontend.html", "r", encoding="utf-8") as f: return f.read()
+
+init_db()
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host=HOST, port=PORT)
-
-@app.get("/", response_class=HTMLResponse)
-def index():
-    with open("frontend.html", "r", encoding="utf-8") as f: 
-        return f.read()
