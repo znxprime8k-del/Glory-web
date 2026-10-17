@@ -121,16 +121,11 @@ def init_db():
 
 def ensure_admin():
     with db() as c:
-        admin = c.execute("SELECT * FROM users WHERE username=?", (ADMIN_USERNAME,)).fetchone()
-        ph = bcrypt.hashpw(ADMIN_PASSWORD[:72].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-        
+        admin = c.execute("SELECT * FROM users WHERE role='admin'").fetchone()
         if not admin:
-            # Create fresh admin
+            ph = bcrypt.hashpw(ADMIN_PASSWORD[:72].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
             c.execute("INSERT INTO users (username, password_hash, role, created_at) VALUES (?,?,?,?)",
                       (ADMIN_USERNAME, ph, "admin", now_iso()))
-        else:
-            # Force update existing admin to correct password and role
-            c.execute("UPDATE users SET password_hash=?, role='admin' WHERE username=?", (ph, ADMIN_USERNAME))
 
 init_db()
 ensure_admin()
