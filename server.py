@@ -119,7 +119,7 @@ def init_db():
             c.execute("INSERT INTO plans (title, description, price, duration_hours, features, active, created_at) VALUES (?,?,?,?,?,1,?)", ("PRO", "Balanced plan", 299, 72, "72h bot runtime|Priority matchmaking", n))
             c.execute("INSERT INTO plans (title, description, price, duration_hours, features, active, created_at) VALUES (?,?,?,?,?,1,?)", ("ELITE", "Maximum runtime", 699, 168, "168h bot runtime|Max matches", n))
 
-def ensure_admin():
+def :
     with db() as c:
         admin = c.execute("SELECT * FROM users WHERE role='admin'").fetchone()
         if not admin:
@@ -128,7 +128,6 @@ def ensure_admin():
                       (ADMIN_USERNAME, ph, "admin", now_iso()))
 
 init_db()
-ensure_admin()
 
 def make_token(user_id: int, username: str, role: str) -> str:
     payload = {"sub": str(user_id), "u": username, "r": role, "exp": datetime.now(timezone.utc) + timedelta(hours=TOKEN_TTL_HOURS)}
