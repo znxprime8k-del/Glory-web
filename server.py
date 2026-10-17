@@ -140,10 +140,20 @@ def init_db():
                        "168h bot runtime|Max concurrent matches|Live dashboard|24/7 support", now))
 
 init_db()
+ensure_admin()
 
 # ============================================================
 # UTILS
 # ============================================================
+
+def ensure_admin():
+    with db() as c:
+        admin = c.execute("SELECT * FROM users WHERE role='admin'").fetchone()
+        if not admin:
+            ph = pwd_ctx.hash(os.getenv("ADMIN_PASSWORD", "ZNXHIKHETE"))
+            c.execute("INSERT INTO users (username, password_hash, role, created_at) VALUES (?,?,?,?)",
+                      (os.getenv("ADMIN_USERNAME", "znxadmin"), ph, "admin", now_iso()))
+
 def now_iso():
     return datetime.now(timezone.utc).isoformat()
 
@@ -194,12 +204,6 @@ def log_activity(actor: str, action: str, detail: str = ""):
 class RegisterIn(BaseModel):
     username: str = Field(..., min_length=3, max_length=32)
     password: str = Field(..., min_length=4, max_length=128)
-
-    @validator("username")
-    def u_clean(cls, v):
-        if not v.replace("_", "").replace("-", "").isalnum():
-            raise ValueError("Username: letters, numbers, _ and - only")
-        return v
 
 class LoginIn(BaseModel):
     username: str
